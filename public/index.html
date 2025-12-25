@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Document Summarizer | Tóm tắt tài liệu thông minh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0f1c;
+      --bg-secondary: #111827;
+      --bg-card: #1a2234;
+      --accent-primary: #06b6d4;
+      --accent-secondary: #8b5cf6;
+      --accent-tertiary: #ec4899;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #2d3a52;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --gradient-1: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #ec4899 100%);
+      --gradient-2: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 40% 60%, rgba(236, 72, 153, 0.05) 0%, transparent 30%);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-top: 2rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--gradient-1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      box-shadow: 0 8px 32px rgba(6, 182, 212, 0.3);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-weight: 300;
+      margin-top: 0.5rem;
+    }
+
+    .powered-by {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .powered-by img {
+      height: 18px;
+    }
+
+    /* Upload Area */
+    .upload-section {
+      background: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--gradient-2);
+    }
+
+    .upload-area:hover,
+    .upload-area.dragover {
+      border-color: var(--accent-primary);
+      background: rgba(6, 182, 212, 0.1);
+    }
+
+    .upload-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .upload-area:hover .upload-icon {
+      transform: scale(1.05);
+      border-color: var(--accent-primary);
+    }
+
+    .upload-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding: 0.875rem 2rem;
+      background: var(--gradient-1);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.4);
+    }
+
+    .upload-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* File Info */
+    .file-info {
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .file-info.show {
+      display: flex;
+    }
+
+    .file-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .file-details {
+      flex: 1;
+    }
+
+    .file-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      word-break: break-all;
+    }
+
+    .file-size {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .file-remove {
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-remove:hover {
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    .loading-steps {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .loading-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    .loading-step.active {
+      color: var(--accent-primary);
+      opacity: 1;
+    }
+
+    .loading-step.done {
+      color: var(--success);
+      opacity: 1;
+    }
+
+    /* Results */
+    .results {
+      display: none;
+    }
+
+    .results.show {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .result-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .result-icon.summary { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+    .result-icon.keypoints { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .result-icon.conclusions { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .result-icon.actions { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+    .result-title-section {
+      flex: 1;
+    }
+
+    .result-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .result-subtitle {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .result-content {
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .result-list {
+      list-style: none;
+    }
+
+    .result-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(45, 58, 82, 0.5);
+    }
+
+    .result-list li:last-child {
+      border-bottom: none;
+    }
+
+    .result-list li::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .result-list.keypoints li::before { background: var(--accent-secondary); }
+    .result-list.conclusions li::before { background: var(--success); }
+    .result-list.actions li::before { background: var(--warning); }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Empty state */
+    .empty-message {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 1rem;
+      text-align: center;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+
+    /* Error */
+    .error {
+      display: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .error-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-text {
+      color: var(--error);
+    }
+
+    /* New Summary Button */
+    .new-summary-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      background: transparent;
+      border: 2px solid var(--accent-primary);
+      color: var(--accent-primary);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      margin-top: 1rem;
+    }
+
+    .new-summary-btn:hover {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    /* Model Selector */
+    .model-selector {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .model-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .model-option:hover {
+      border-color: var(--text-muted);
+    }
+
+    .model-option.selected {
+      border-color: var(--accent-primary);
+      background: rgba(6, 182, 212, 0.1);
+    }
+
+    .model-option.selected.gpt {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .model-option.selected.groq {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .model-icon.groq {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .model-option input {
+      display: none;
+    }
+
+    .model-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .model-icon.gemini {
+      background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 100%);
+    }
+
+    .model-icon.gpt {
+      background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+    }
+
+    .model-info {
+      text-align: left;
+    }
+
+    .model-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .model-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Input Mode Tabs */
+    .input-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .input-tab {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .input-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .input-tab.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Text Input Area */
+    .text-input-area {
+      display: none;
+    }
+
+    .text-input-area.show {
+      display: block;
+    }
+
+    .text-input {
+      width: 100%;
+      min-height: 200px;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .text-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .char-count.warning {
+      color: var(--warning);
+    }
+
+    .char-count.error {
+      color: var(--error);
+    }
+
+    /* History Section */
+    .history-section {
+      display: none;
+    }
+
+    .history-section.show {
+      display: block;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .history-count {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .history-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .history-item:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .history-item-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .history-item-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .history-item-summary {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .history-item-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .history-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .history-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .history-btn.delete {
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .history-btn.delete:hover {
+      background: var(--error);
+      color: white;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .history-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+
+      .upload-section {
+        padding: 1.5rem;
+      }
+
+      .upload-area {
+        padding: 2rem 1rem;
+      }
+
+      .loading-steps {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .result-header {
+        flex-direction: column;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+  
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">📄</div>
+        <h1>AI Document Summarizer</h1>
+      </div>
+      <p class="subtitle">Tóm tắt tài liệu PDF thông minh với trí tuệ nhân tạo</p>
+      <div class="powered-by">
+        <span>Powered by</span>
+        <strong style="color: var(--accent-primary);">Gemini</strong>
+        <span>•</span>
+        <strong style="color: var(--warning);">Groq</strong>
+        <span>•</span>
+        <strong style="color: var(--success);">GPT</strong>
+        <span>✨</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Upload Section -->
+      <section class="upload-section" id="uploadSection">
+        <!-- Input Mode Tabs -->
+        <div class="input-tabs">
+          <button class="input-tab active" id="tabFile">
+            <span>📄</span> Upload PDF
+          </button>
+          <button class="input-tab" id="tabText">
+            <span>✏️</span> Nhập văn bản
+          </button>
+          <button class="input-tab" id="tabHistory">
+            <span>📚</span> Lịch sử
+          </button>
+        </div>
+
+        <!-- File Upload Area -->
+        <div id="fileUploadArea">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📤</div>
+            <p class="upload-title">Kéo thả file PDF vào đây</p>
+            <p class="upload-subtitle">hoặc click để chọn file (tối đa 10MB)</p>
+            <button class="upload-btn" id="selectBtn">
+              <span>📁</span> Chọn file PDF
+            </button>
+            <input type="file" id="fileInput" accept=".pdf,application/pdf">
+          </div>
+
+          <div class="file-info" id="fileInfo">
+            <div class="file-icon">📄</div>
+            <div class="file-details">
+              <p class="file-name" id="fileName"></p>
+              <p class="file-size" id="fileSize"></p>
+            </div>
+            <button class="file-remove" id="removeFile" title="Xóa file">✕</button>
+          </div>
+        </div>
+
+        <!-- Text Input Area -->
+        <div class="text-input-area" id="textInputArea">
+          <textarea 
+            class="text-input" 
+            id="textInput" 
+            placeholder="Dán hoặc nhập văn bản cần tóm tắt vào đây...
+
+Ví dụ: Nội dung báo cáo, biên bản họp, tài liệu kỹ thuật, bài viết..."
+          ></textarea>
+          <div class="char-count" id="charCount">0 / 100,000 ký tự</div>
+        </div>
+
+        <!-- Model Selector -->
+        <div class="model-selector" id="modelSelector">
+          <label class="model-option selected" id="modelGemini">
+            <input type="radio" name="model" value="gemini" checked>
+            <div class="model-icon gemini">✨</div>
+            <div class="model-info">
+              <div class="model-name">Gemini 2.0</div>
+              <div class="model-desc">Google AI</div>
+            </div>
+          </label>
+          <label class="model-option groq" id="modelGroq">
+            <input type="radio" name="model" value="groq">
+            <div class="model-icon groq">⚡</div>
+            <div class="model-info">
+              <div class="model-name">Llama 3.3 70B</div>
+              <div class="model-desc">Groq (Free)</div>
+            </div>
+          </label>
+          <label class="model-option gpt" id="modelGpt">
+            <input type="radio" name="model" value="gpt">
+            <div class="model-icon gpt">🤖</div>
+            <div class="model-info">
+              <div class="model-name">GPT-4o Mini</div>
+              <div class="model-desc">OpenAI ($)</div>
+            </div>
+          </label>
+        </div>
+
+        <div style="text-align: center; margin-top: 1rem;">
+          <button class="upload-btn" id="summarizeBtn" disabled>
+            <span>✨</span> Tóm tắt ngay
+          </button>
+        </div>
+
+        <div class="error" id="errorBox">
+          <div class="error-icon">⚠️</div>
+          <p class="error-text" id="errorText"></p>
+        </div>
+      </section>
+
+      <!-- Loading -->
+      <section class="loading" id="loadingSection">
+        <div class="spinner"></div>
+        <p class="loading-text">Đang phân tích tài liệu...</p>
+        <div class="loading-steps">
+          <div class="loading-step" id="step1">
+            <span>📄</span> Đọc PDF
+          </div>
+          <div class="loading-step" id="step2">
+            <span>🔍</span> Phân tích nội dung
+          </div>
+          <div class="loading-step" id="step3">
+            <span>✨</span> Tạo tóm tắt
+          </div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section class="results" id="resultsSection">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statPages">0</div>
+            <div class="stat-label">Số trang</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statChars">0</div>
+            <div class="stat-label">Ký tự</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statTime">0s</div>
+            <div class="stat-label">Thời gian xử lý</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statPoints">0</div>
+            <div class="stat-label">Điểm chính</div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon summary">📝</div>
+            <div class="result-title-section">
+              <h2 class="result-title">Tóm tắt</h2>
+              <p class="result-subtitle">Nội dung chính của tài liệu</p>
+            </div>
+          </div>
+          <div class="result-content" id="summaryContent"></div>
+        </div>
+
+        <!-- Key Points -->
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon keypoints">💡</div>
+            <div class="result-title-section">
+              <h2 class="result-title">Điểm chính</h2>
+              <p class="result-subtitle">Các ý quan trọng trong tài liệu</p>
+            </div>
+          </div>
+          <ul class="result-list keypoints" id="keyPointsList"></ul>
+        </div>
+
+        <!-- Conclusions -->
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon conclusions">🎯</div>
+            <div class="result-title-section">
+              <h2 class="result-title">Kết luận</h2>
+              <p class="result-subtitle">Các kết luận rút ra từ tài liệu</p>
+            </div>
+          </div>
+          <ul class="result-list conclusions" id="conclusionsList"></ul>
+        </div>
+
+        <!-- Action Items -->
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon actions">📋</div>
+            <div class="result-title-section">
+              <h2 class="result-title">Hành động cần thực hiện</h2>
+              <p class="result-subtitle">Các việc cần làm được đề cập trong tài liệu</p>
+            </div>
+          </div>
+          <ul class="result-list actions" id="actionsList"></ul>
+        </div>
+
+        <div style="text-align: center;">
+          <button class="new-summary-btn" id="newSummaryBtn">
+            <span>📄</span> Tóm tắt tài liệu khác
+          </button>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="history-section" id="historySection">
+        <div class="history-header">
+          <h2 style="margin: 0;">📚 Lịch sử tóm tắt</h2>
+          <div class="history-count" id="historyCount">Đang tải...</div>
+        </div>
+        <div class="history-list" id="historyList">
+          <!-- History items will be inserted here -->
+        </div>
+        <div class="history-empty" id="historyEmpty" style="display: none;">
+          <div class="history-empty-icon">📭</div>
+          <p>Chưa có lịch sử tóm tắt nào</p>
+          <p style="font-size: 0.85rem; margin-top: 0.5rem;">Hãy tóm tắt một tài liệu để bắt đầu!</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>AI Document Summarizer &copy; 2025 | Powered by Gemini, Groq & OpenAI</p>
+    </footer>
+  </div>
+
+  <script>
+    // DOM Elements
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const selectBtn = document.getElementById('selectBtn');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFile = document.getElementById('removeFile');
+    const summarizeBtn = document.getElementById('summarizeBtn');
+    const uploadSection = document.getElementById('uploadSection');
+    const loadingSection = document.getElementById('loadingSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const errorBox = document.getElementById('errorBox');
+    const errorText = document.getElementById('errorText');
+    const newSummaryBtn = document.getElementById('newSummaryBtn');
+    const modelGemini = document.getElementById('modelGemini');
+    const modelGroq = document.getElementById('modelGroq');
+    const modelGpt = document.getElementById('modelGpt');
+    
+    // Tab elements
+    const tabFile = document.getElementById('tabFile');
+    const tabText = document.getElementById('tabText');
+    const tabHistory = document.getElementById('tabHistory');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const textInputArea = document.getElementById('textInputArea');
+    const textInput = document.getElementById('textInput');
+    const charCount = document.getElementById('charCount');
+    
+    // History elements
+    const historySection = document.getElementById('historySection');
+    const historyList = document.getElementById('historyList');
+    const historyCount = document.getElementById('historyCount');
+    const historyEmpty = document.getElementById('historyEmpty');
+
+    let selectedFile = null;
+    let selectedModel = 'gemini';
+    let inputMode = 'file'; // 'file', 'text', or 'history'
+    const MAX_CHARS = 100000;
+
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    // Format number with locale
+    function formatNumber(num) {
+      return num.toLocaleString('vi-VN');
+    }
+
+    // Handle file selection
+    function handleFileSelect(file) {
+      if (!file) return;
+      
+      if (file.type !== 'application/pdf') {
+        showError('Vui lòng chọn file PDF');
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) {
+        showError('File quá lớn. Vui lòng chọn file nhỏ hơn 10MB');
+        return;
+      }
+      
+      selectedFile = file;
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      fileInfo.classList.add('show');
+      updateSummarizeButton();
+      hideError();
+    }
+
+    // Show error
+    function showError(message) {
+      errorText.textContent = message;
+      errorBox.classList.add('show');
+    }
+
+    // Hide error
+    function hideError() {
+      errorBox.classList.remove('show');
+    }
+
+    // Reset state
+    function resetState() {
+      selectedFile = null;
+      fileInput.value = '';
+      fileInfo.classList.remove('show');
+      textInput.value = '';
+      updateCharCount();
+      updateSummarizeButton();
+      uploadSection.style.display = 'block';
+      loadingSection.classList.remove('show');
+      resultsSection.classList.remove('show');
+      hideError();
+      
+      // Reset loading steps
+      document.querySelectorAll('.loading-step').forEach(step => {
+        step.classList.remove('active', 'done');
+      });
+    }
+
+    // Update character count
+    function updateCharCount() {
+      const count = textInput.value.length;
+      charCount.textContent = `${count.toLocaleString('vi-VN')} / 100,000 ký tự`;
+      charCount.classList.remove('warning', 'error');
+      if (count > MAX_CHARS) {
+        charCount.classList.add('error');
+      } else if (count > MAX_CHARS * 0.9) {
+        charCount.classList.add('warning');
+      }
+    }
+
+    // Update summarize button state
+    function updateSummarizeButton() {
+      if (inputMode === 'file') {
+        summarizeBtn.disabled = !selectedFile;
+      } else {
+        const textLength = textInput.value.trim().length;
+        summarizeBtn.disabled = textLength < 50 || textLength > MAX_CHARS;
+      }
+    }
+
+    // Switch input mode
+    function switchInputMode(mode) {
+      inputMode = mode;
+      tabFile.classList.remove('active');
+      tabText.classList.remove('active');
+      tabHistory.classList.remove('active');
+      
+      if (mode === 'file') {
+        tabFile.classList.add('active');
+        fileUploadArea.style.display = 'block';
+        textInputArea.classList.remove('show');
+        historySection.classList.remove('show');
+        uploadSection.style.display = 'block';
+      } else if (mode === 'text') {
+        tabText.classList.add('active');
+        fileUploadArea.style.display = 'none';
+        textInputArea.classList.add('show');
+        historySection.classList.remove('show');
+        uploadSection.style.display = 'block';
+      } else if (mode === 'history') {
+        tabHistory.classList.add('active');
+        fileUploadArea.style.display = 'none';
+        textInputArea.classList.remove('show');
+        historySection.classList.add('show');
+        uploadSection.style.display = 'none';
+        loadHistory();
+      }
+      updateSummarizeButton();
+      hideError();
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Get model display name
+    function getModelName(model) {
+      const names = {
+        'gemini': 'Gemini 2.0',
+        'groq': 'Llama 3.3',
+        'gpt': 'GPT-4o Mini'
+      };
+      return names[model] || model;
+    }
+
+    // Load history
+    async function loadHistory() {
+      try {
+        const response = await fetch('/api/history?limit=50');
+        if (!response.ok) throw new Error('Failed to load history');
+        const data = await response.json();
+        
+        historyCount.textContent = `Tổng: ${data.count} bản tóm tắt`;
+        
+        if (data.data.length === 0) {
+          historyList.style.display = 'none';
+          historyEmpty.style.display = 'block';
+        } else {
+          historyList.style.display = 'flex';
+          historyEmpty.style.display = 'none';
+          historyList.innerHTML = data.data.map(item => `
+            <div class="history-item" onclick="viewHistoryDetail('${item.id}')">
+              <div class="history-item-header">
+                <div>
+                  <div class="history-item-title">${item.filename}</div>
+                  <div class="history-item-meta">
+                    <span>📅 ${formatDate(item.createdAt)}</span>
+                    <span>🤖 ${getModelName(item.model)}</span>
+                    <span>📄 ${item.pageCount} trang</span>
+                    <span>⏱️ ${(item.processingTimeMs / 1000).toFixed(1)}s</span>
+                  </div>
+                </div>
+              </div>
+              <div class="history-item-summary">${item.summary}</div>
+              <div class="history-item-actions" onclick="event.stopPropagation()">
+                <button class="history-btn" onclick="viewHistoryDetail('${item.id}')">Xem chi tiết</button>
+                <button class="history-btn delete" onclick="deleteHistory('${item.id}')">Xóa</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Error loading history:', error);
+        historyCount.textContent = 'Lỗi khi tải lịch sử';
+      }
+    }
+
+    // View history detail
+    async function viewHistoryDetail(id) {
+      try {
+        const response = await fetch(`/api/history/${id}`);
+        if (!response.ok) throw new Error('Failed to load history detail');
+        const item = await response.json();
+        
+        // Display results
+        document.getElementById('statPages').textContent = item.pageCount;
+        document.getElementById('statChars').textContent = formatNumber(item.characterCount);
+        document.getElementById('statTime').textContent = (item.processingTimeMs / 1000).toFixed(1) + 's';
+        document.getElementById('statPoints').textContent = item.keyPoints.length;
+        
+        document.getElementById('summaryContent').textContent = item.summary;
+        renderList('keyPointsList', item.keyPoints, 'Không có điểm chính');
+        renderList('conclusionsList', item.conclusions, 'Không có kết luận');
+        renderList('actionsList', item.actionItems, 'Không có hành động cần thực hiện');
+        
+        historySection.classList.remove('show');
+        resultsSection.classList.add('show');
+        uploadSection.style.display = 'none';
+      } catch (error) {
+        console.error('Error loading history detail:', error);
+        showError('Không thể tải chi tiết lịch sử');
+      }
+    }
+
+    // Delete history
+    async function deleteHistory(id) {
+      if (!confirm('Bạn có chắc muốn xóa bản tóm tắt này?')) return;
+      
+      try {
+        const response = await fetch(`/api/history/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to delete history');
+        loadHistory();
+      } catch (error) {
+        console.error('Error deleting history:', error);
+        showError('Không thể xóa lịch sử');
+      }
+    }
+
+    // Make functions global for onclick handlers
+    window.viewHistoryDetail = viewHistoryDetail;
+    window.deleteHistory = deleteHistory;
+
+    // Update loading step
+    function updateLoadingStep(stepNum, status) {
+      const steps = ['step1', 'step2', 'step3'];
+      steps.forEach((id, index) => {
+        const step = document.getElementById(id);
+        if (index < stepNum - 1) {
+          step.classList.remove('active');
+          step.classList.add('done');
+        } else if (index === stepNum - 1) {
+          step.classList.add('active');
+          step.classList.remove('done');
+        } else {
+          step.classList.remove('active', 'done');
+        }
+      });
+    }
+
+    // Render list items
+    function renderList(containerId, items, emptyMessage) {
+      const container = document.getElementById(containerId);
+      if (!items || items.length === 0) {
+        container.innerHTML = `<div class="empty-message">${emptyMessage}</div>`;
+        return;
+      }
+      container.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+    }
+
+    // Display results
+    function displayResults(data) {
+      document.getElementById('statPages').textContent = data.pageCount;
+      document.getElementById('statChars').textContent = formatNumber(data.characterCount);
+      document.getElementById('statTime').textContent = (data.processingTimeMs / 1000).toFixed(1) + 's';
+      document.getElementById('statPoints').textContent = data.keyPoints.length;
+      
+      document.getElementById('summaryContent').textContent = data.summary;
+      renderList('keyPointsList', data.keyPoints, 'Không có điểm chính');
+      renderList('conclusionsList', data.conclusions, 'Không có kết luận');
+      renderList('actionsList', data.actionItems, 'Không có hành động cần thực hiện');
+      
+      loadingSection.classList.remove('show');
+      resultsSection.classList.add('show');
+    }
+
+    // Summarize document
+    async function summarizeDocument() {
+      hideError();
+      uploadSection.style.display = 'none';
+      loadingSection.classList.add('show');
+      
+      updateLoadingStep(1);
+      
+      try {
+        let response;
+        
+        if (inputMode === 'file') {
+          if (!selectedFile) return;
+          const formData = new FormData();
+          formData.append('file', selectedFile);
+          
+          updateLoadingStep(2);
+          
+          response = await fetch(`/api/summarizer/pdf?model=${selectedModel}`, {
+            method: 'POST',
+            body: formData
+          });
+        } else {
+          const text = textInput.value.trim();
+          if (text.length < 50) {
+            throw new Error('Văn bản quá ngắn. Cần ít nhất 50 ký tự.');
+          }
+          
+          updateLoadingStep(2);
+          
+          response = await fetch('/api/summarizer/text', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              text: text,
+              model: selectedModel
+            })
+          });
+        }
+        
+        updateLoadingStep(3);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Đã xảy ra lỗi khi xử lý tài liệu');
+        }
+        
+        const data = await response.json();
+        
+        setTimeout(() => {
+          displayResults(data);
+          // Refresh history if on history tab
+          if (inputMode === 'history') {
+            loadHistory();
+          }
+        }, 500);
+        
+      } catch (error) {
+        loadingSection.classList.remove('show');
+        uploadSection.style.display = 'block';
+        showError(error.message || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+      }
+    }
+
+    // Event Listeners
+    selectBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+
+    uploadArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFileSelect(e.target.files[0]);
+    });
+
+    removeFile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetState();
+    });
+
+    summarizeBtn.addEventListener('click', summarizeDocument);
+    
+    newSummaryBtn.addEventListener('click', resetState);
+
+    // Model selection
+    function selectModel(model) {
+      selectedModel = model;
+      modelGemini.classList.remove('selected');
+      modelGroq.classList.remove('selected');
+      modelGpt.classList.remove('selected');
+      if (model === 'gemini') modelGemini.classList.add('selected');
+      else if (model === 'groq') modelGroq.classList.add('selected');
+      else if (model === 'gpt') modelGpt.classList.add('selected');
+    }
+
+    modelGemini.addEventListener('click', () => selectModel('gemini'));
+    modelGroq.addEventListener('click', () => selectModel('groq'));
+    modelGpt.addEventListener('click', () => selectModel('gpt'));
+
+    // Tab switching
+    tabFile.addEventListener('click', () => switchInputMode('file'));
+    tabText.addEventListener('click', () => switchInputMode('text'));
+    tabHistory.addEventListener('click', () => switchInputMode('history'));
+
+    // Text input events
+    textInput.addEventListener('input', () => {
+      updateCharCount();
+      updateSummarizeButton();
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+  </script>
+</body>
+</html>
+

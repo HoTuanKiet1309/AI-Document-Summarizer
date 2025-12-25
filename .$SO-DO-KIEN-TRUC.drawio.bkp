@@ -1,0 +1,244 @@
+<mxfile host="app.diagrams.net" modified="2025-12-21T00:00:00.000Z" agent="5.0" version="21.0.0" etag="drawio" type="device">
+  <diagram id="architecture-overview" name="Kiến trúc tổng quan">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Client Layer -->
+        <mxCell id="client-layer" value="CLIENT LAYER" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="400" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="client-browser" value="Web Browser (HTML/CSS/JavaScript)&#xa;- Upload PDF / Nhập văn bản&#xa;- Chọn AI Model&#xa;- Hiển thị kết quả&#xa;- Quản lý lịch sử" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" vertex="1" parent="client-layer">
+          <mxGeometry y="40" width="400" height="160" as="geometry" />
+        </mxCell>
+        
+        <!-- HTTP Connection -->
+        <mxCell id="http-arrow" value="HTTP/REST API" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;" edge="1" parent="1" source="client-layer" target="server-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Server Layer -->
+        <mxCell id="server-layer" value="SERVER LAYER" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="40" width="500" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- Controller Layer -->
+        <mxCell id="controller-layer" value="Controller Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="server-layer">
+          <mxGeometry y="40" width="500" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="controller-endpoints" value="/api/summarizer/pdf&#xa;/api/summarizer/text&#xa;/api/history" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" vertex="1" parent="controller-layer">
+          <mxGeometry y="30" width="500" height="90" as="geometry" />
+        </mxCell>
+        
+        <!-- Service Layer -->
+        <mxCell id="service-layer" value="Service Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="server-layer">
+          <mxGeometry y="160" width="500" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="service-components" value="PDF Extractor Service&#xa;AI Service Router&#xa;History Service" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" vertex="1" parent="service-layer">
+          <mxGeometry y="30" width="500" height="90" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow from Controller to Service -->
+        <mxCell id="ctrl-svc-arrow" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="server-layer" source="controller-layer" target="service-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- External Services -->
+        <mxCell id="db-box" value="Database&#xa;(SQLite)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="560" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gemini-box" value="Gemini AI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="720" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="groq-gpt-box" value="Groq / GPT AI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="880" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows to external services -->
+        <mxCell id="db-arrow" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1" source="service-layer" target="db-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gemini-arrow" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1" source="service-layer" target="gemini-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="groq-arrow" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1" source="service-layer" target="groq-gpt-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  
+  <diagram id="pdf-flow" name="Luồng xử lý PDF">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Start -->
+        <mxCell id="start" value="1. Upload PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Extract -->
+        <mxCell id="extract" value="2. Trích xuất Text" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Select Model -->
+        <mxCell id="select" value="3. Chọn AI Model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Process AI -->
+        <mxCell id="process" value="4. Xử lý AI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Analyze -->
+        <mxCell id="analyze" value="5. Phân tích kết quả" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Save -->
+        <mxCell id="save" value="6. Lưu vào Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Display -->
+        <mxCell id="display" value="7. Hiển thị kết quả" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows -->
+        <mxCell id="arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="start" target="extract">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="extract" target="select">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="select" target="process">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="process" target="analyze">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="analyze" target="save">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="save" target="display">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  
+  <diagram id="text-flow" name="Luồng xử lý Text">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Start -->
+        <mxCell id="t-start" value="1. Nhập văn bản" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Validate -->
+        <mxCell id="t-validate" value="2. Validate&#xa;(50-100K ký tự)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Select Model -->
+        <mxCell id="t-select" value="3. Chọn AI Model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Process AI -->
+        <mxCell id="t-process" value="4. Xử lý AI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Save -->
+        <mxCell id="t-save" value="5. Lưu kèm văn bản gốc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Display -->
+        <mxCell id="t-display" value="6. Hiển thị kết quả" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows -->
+        <mxCell id="t-arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="t-start" target="t-validate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t-arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="t-validate" target="t-select">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t-arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="t-select" target="t-process">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t-arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="t-process" target="t-save">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t-arrow5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="t-save" target="t-display">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  
+  <diagram id="database-schema" name="Database Schema">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- History Table -->
+        <mxCell id="history-table" value="History Table" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="400" height="500" as="geometry" />
+        </mxCell>
+        
+        <!-- Fields -->
+        <mxCell id="field-id" value="id: UUID (PK)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="history-table">
+          <mxGeometry y="30" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-filename" value="filename: VARCHAR(255)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="60" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-summary" value="summary: TEXT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="90" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-keypoints" value="keyPoints: TEXT (JSON)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="120" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-conclusions" value="conclusions: TEXT (JSON)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="150" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-actionitems" value="actionItems: TEXT (JSON)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="180" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-model" value="model: VARCHAR(50)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="210" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-pagecount" value="pageCount: INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="240" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-charcount" value="characterCount: INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="270" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-processtime" value="processingTimeMs: INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="300" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-originaltext" value="originalText: TEXT (nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="history-table">
+          <mxGeometry y="330" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="field-createdat" value="createdAt: TIMESTAMP" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="history-table">
+          <mxGeometry y="360" width="400" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+
